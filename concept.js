@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+//
+
 var fs = require('fs')
 var pty = require('pty.js')
 var util = require('util')
