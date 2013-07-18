@@ -7,13 +7,11 @@ var util = require('util')
 var split = require('split')
 var keypress = require('keypress')
 
-var script = process.argv[2]
-var mode = process.argv[3]
+var mode = process.argv[2]
+var script = process.argv[3]
 
-if(!script || !mode)
-  return console.log('Usage: concept.js <script-file> <record | play>')
-if(mode != 'play' && mode != 'record')
-  return console.log('Usage: concept.js <script-file> <record | play>')
+if(!script || (mode != 'play' && mode != 'record'))
+  return console.log('Usage: concept.js <record | play> <script-file>')
 
 var term = null
 
