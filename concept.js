@@ -4,9 +4,13 @@ var util = require('util')
 var split = require('split')
 var keypress = require('keypress')
 
-var mode = (process.argv[2] == 'play')
-            ? 'play'
-            : 'record'
+var script = process.argv[2]
+var mode = process.argv[3]
+
+if(!script || !mode)
+  return console.log('Usage: concept.js <script-file> <record | play>')
+if(mode != 'play' && mode != 'record')
+  return console.log('Usage: concept.js <script-file> <record | play>')
 
 var term = null
 
@@ -14,10 +18,10 @@ process.stdin.setRawMode(true)
 keypress(process.stdin)
 
 if(mode != 'play') {
-  var script = fs.createWriteStream('/tmp/out')
+  script = fs.createWriteStream(script)
   start()
 } else {
-  var script = fs.createReadStream('/tmp/out').pipe(split('\n'))
+  script = fs.createReadStream(script).pipe(split('\n'))
   var lines = []
   script.on('data', function(line) {
     if(line) {
