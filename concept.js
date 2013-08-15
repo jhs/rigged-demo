@@ -7,18 +7,18 @@ var util = require('util')
 var split = require('split')
 var keypress = require('keypress')
 
-var mode = process.argv[2]
-var script = process.argv[3]
+var script = process.argv[2]
+var mode = process.argv[3]
 
-if(!script || (mode != 'play' && mode != 'record'))
-  return console.log('Usage: concept.js <record | play> <script-file>')
+if(!script || (mode != 'play' && mode != 'record' && mode != 'append'))
+  return console.log('Usage: concept.js <script-file> <record | play | append>')
 
 var term = null
 
 process.stdin.setRawMode(true)
 keypress(process.stdin)
 
-if(mode != 'play') {
+if(mode == 'record') {
   script = fs.createWriteStream(script)
   start()
 } else {
@@ -38,18 +38,26 @@ if(mode != 'play') {
 
 process.stdin.on('keypress', function(ch, key) {
   //console.log('Key ch=%j key=%j', ch, key)
-  if(mode == 'play')
-    play_key()
-  else
+  if(mode == 'record')
     record_key(ch, key)
+  else
+    play_key()
 })
 
 function play_key() {
   var line = script.shift()
-  if(!line)
-    throw new Error('No more lines in script')
+  if(line)
+    return send(line.ch, line.key)
 
-  send(line.ch, line.key)
+  // No more lines left.
+  if(mode == 'play')
+    return term.end()
+
+  // Append mode. Switch from play to record.
+  mode = 'record'
+  if(mode == 'append')
+  if(!line)
+    return term.end()
 }
 
 function record_key(ch, key) {
@@ -68,8 +76,6 @@ function send(ch, key) {
 
   throw new Error(util.format('Unknown keypress: ch=%j key=%j\n', ch, key))
 }
-
-//process.stdin.on('end', term.end.bind(term))
 
 function start() {
   term = pty.spawn('bash', [],
